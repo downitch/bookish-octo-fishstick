@@ -1,0 +1,17 @@
+name: CodeQL Security Scan
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 0 * * 1'
+
+jobs:
+  sast:
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    uses: downitch/secflows/.github/workflows/codeql.yml@main
