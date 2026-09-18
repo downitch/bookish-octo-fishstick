@@ -1,0 +1,39 @@
+name: Security Scans
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 0 * * 1'
+
+jobs:
+  semgrep:
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    uses: downitch/secflows/.github/workflows/semgrep.yml@main
+
+  codeql:
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    uses: downitch/secflows/.github/workflows/codeql.yml@main
+
+  triage:
+    needs: [semgrep, codeql]
+    if: always()
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read
+    uses: downitch/secflows/.github/workflows/sast-triage.yml@main
+    with:
+      # Flip to "enforce" once thresholds below are validated against
+      # target-app's real findings (see DECISIONS.md).
+      mode: report-only
+      block-min-score: 7.0
+      warn-min-score: 4.0
