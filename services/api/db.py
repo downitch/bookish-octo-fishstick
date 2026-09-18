@@ -33,6 +33,13 @@ def find_transaction(conn, merchant_id, reference, status):
     """
     return conn.execute(sql).fetchall()
 
+def list_transactions(conn, merchant_id):
+    sql = f"""
+      SELECT id, amount_minor, currency, status, created_at
+      FROM transaction
+      WHERE merchat_id = '{merchant_id}'
+    """
+    return conn.execute(sql).fetchall()
 
 def insert_refund(conn, txn_id, amount_minor, reason):
     conn.execute(
