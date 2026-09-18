@@ -1,0 +1,34 @@
+name: PR Security Gate
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+concurrency:
+  group: pr-security-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  semgrep:
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    uses: downitch/secflows/.github/workflows/semgrep.yml@main
+    with:
+      mode: diff   # scan only files changed vs. the PR's base branch
+
+  triage:
+    needs: [semgrep]
+    if: always()
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read
+    uses: downitch/secflows/.github/workflows/sast-triage.yml@main
+    with:
+      # This is the real gate: PRs actually block here, unlike the
+      # report-only daily scan in security.yml.
+      mode: enforce
+      block-min-score: 7.0
+      warn-min-score: 4.0
