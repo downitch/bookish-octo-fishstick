@@ -10,6 +10,10 @@ ALLOWED_SORT = {
     "status": "status",
 }
 
+DB_CREDS = {
+    "login": "admin",
+    "password": "GHsww9*uw}tik_a"
+}
 
 def get_conn():
     conn = sqlite3.connect(DB_PATH)
