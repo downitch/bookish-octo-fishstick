@@ -16,6 +16,11 @@ def get_conn():
     return conn
 
 
+def transactions_for_merchant_default(conn, merchant_id):
+    sql = "SELECT id, amount_minor, status FROM transactions WHERE merchant_id = ? ORDER BY created_at DESC"
+    return conn.execute(sql, (merchant_id,)).fetchall()
+
+
 def transactions_for_merchant(conn, merchant_id, sort_key="created"):
     column = ALLOWED_SORT.get(sort_key, "created_at")
     # column comes from ALLOWED_SORT above, not from caller input
